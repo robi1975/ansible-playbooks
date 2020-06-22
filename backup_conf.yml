@@ -1,0 +1,24 @@
+---
+- name: Running show run commands on Cisco IOS
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: Running show run
+      ios_command:
+        commands:
+          - show run
+
+      register: my_config
+
+    - name: Set date
+      set_fact: temp="{{lookup('pipe','date \"+%Y-%m-%d\"')}}"
+
+    - name: Save to file
+      copy: 
+        content: "{{my_config.stdout[0]}}"
+        dest: "/home/centos/ansible/mojbackup/{{temp}}-{{inventory_hostname}}.txt"
+
+
+...
